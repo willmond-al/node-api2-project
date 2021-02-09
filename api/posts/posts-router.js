@@ -91,6 +91,7 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     Posts.update(req.params.id, req.body)
     .then(post => {
+        console.log(post)
         if (req.body.title && req.body.contents) {
             res.status(200).json(post)
         } else {
@@ -108,10 +109,9 @@ router.put('/:id', (req, res) => {
 })
 
 router.get('/:id/comments', (req, res) => {
-    Posts.findById(req.params.id)
+    Posts.findPostComments(req.params.id)
     .then(comment => {
         res.status(200).json(comment)
-        console.log(comment)
     })
     .catch(err => {
         console.log(err)
