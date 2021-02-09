@@ -11,8 +11,8 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
         console.log(err)
-        res.status(500).json({
-            message: 'error retrieving posts'
+        res.status(500).json({ 
+            message: "The posts information could not be retrieved" 
         })
     })
 })
@@ -31,15 +31,33 @@ router.get('/:id', (req, res) => {
     .catch(err => {
         console.log(err)
         res.status(500).json({
-            message: `error retrieving post with id ${req.params.id}`
+            message: `error retrieving posts`
         })
     })
 })
 
+// router.post('/', (req, res) => {
+//     Posts.insert(req.body)
+//     .then( post => {
+//             res.status(201).json(post)
+//     })
+//     .catch(err => {
+//         console.log(err)
+//         res.status(500).json({
+//             message: 'error adding post'
+//         })
+//     })
+// })
 router.post('/', (req, res) => {
     Posts.insert(req.body)
-    .then(post => {
-        res.status(201).json(post)
+    .then( post => {
+        if (req.body.title && req.body.contents){
+            res.status(201).json(post)
+        } else {
+            res.status(404).json({
+                message: 'bad request, title and contents required'
+            })
+        }
     })
     .catch(err => {
         console.log(err)
@@ -54,7 +72,7 @@ router.delete('/:id', (req, res) => {
       .then(count => {
         if (count > 0) {
           res.status(200).json({ 
-              message: 'post has been deleted' 
+              message: `post with id ${req.params.id} has been deleted`
             });
         } else {
           res.status(404).json({ 
@@ -73,11 +91,11 @@ router.delete('/:id', (req, res) => {
 router.put('/:id', (req, res) => {
     Posts.update(req.params.id, req.body)
     .then(post => {
-        if (post) {
+        if (req.body.title && req.body.contents) {
             res.status(200).json(post)
         } else {
             res.status(404).json({
-                message: `post id ${req.parama.id} not found`
+                message: `please provide title and contents`
             })
         }
     })
@@ -85,6 +103,20 @@ router.put('/:id', (req, res) => {
         console.log(err)
         res.status(500).json({
             message: 'error updating post'
+        })
+    })
+})
+
+router.get('/:id/comments', (req, res) => {
+    Posts.findById(req.params.id)
+    .then(comment => {
+        res.status(200).json(comment)
+        console.log(comment)
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(404).json({
+            message: 'could not get comments'
         })
     })
 })
